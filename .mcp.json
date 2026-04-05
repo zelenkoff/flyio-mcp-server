@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "flyio": {
+      "command": "node",
+      "args": ["/Users/zelenkoff/Desktop/projects/logs-gatering/dist/index.js"]
+    }
+  }
+}

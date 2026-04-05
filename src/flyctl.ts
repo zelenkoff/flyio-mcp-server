@@ -1,0 +1,45 @@
+import { execFile } from "node:child_process";
+
+export class FlyctlError extends Error {
+  constructor(
+    message: string,
+    public readonly stderr: string,
+    public readonly exitCode: number | null,
+  ) {
+    super(message);
+    this.name = "FlyctlError";
+  }
+}
+
+export function execFlyctl(
+  args: string[],
+  timeoutMs = 30_000,
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const proc = execFile("flyctl", args, { timeout: timeoutMs }, (error, stdout, stderr) => {
+      if (error) {
+        reject(
+          new FlyctlError(
+            `flyctl ${args[0]} failed: ${stderr || error.message}`,
+            stderr,
+            error.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER" ? null : (error as any).code ?? null,
+          ),
+        );
+        return;
+      }
+      resolve(stdout);
+    });
+  });
+}
+
+export function parseJson(raw: string): unknown {
+  return JSON.parse(raw);
+}
+
+export function parseNdjson(raw: string): unknown[] {
+  return raw
+    .trim()
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line));
+}
