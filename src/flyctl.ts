@@ -37,9 +37,15 @@ export function parseJson(raw: string): unknown {
 }
 
 export function parseNdjson(raw: string): unknown[] {
-  return raw
-    .trim()
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => JSON.parse(line));
+  const results: unknown[] = [];
+  for (const line of raw.trim().split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      results.push(JSON.parse(trimmed));
+    } catch {
+      // Skip non-JSON lines (e.g. flyctl status messages)
+    }
+  }
+  return results;
 }
