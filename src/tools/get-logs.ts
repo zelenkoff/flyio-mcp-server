@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { execFlyctl, parseNdjson, FlyctlError } from "../flyctl.js";
+import { execFlyctl, FlyctlError } from "../flyctl.js";
 
 const MAX_LOG_LINES = 100;
 
@@ -20,7 +20,8 @@ export async function getLogs(params: {
 
   try {
     const raw = await execFlyctl(args, 15_000);
-    const lines = parseNdjson(raw);
+    const normalized = "[" + raw.trim().replace(/\}\s*\{/g, "},{") + "]";
+    const lines = JSON.parse(normalized) as any[];
 
     const truncated = lines.length > MAX_LOG_LINES;
     const display = truncated ? lines.slice(-MAX_LOG_LINES) : lines;
