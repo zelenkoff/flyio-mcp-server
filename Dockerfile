@@ -9,7 +9,7 @@ ENV PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
