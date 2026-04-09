@@ -8,6 +8,7 @@ import { listAppsSchema, listApps } from "./tools/list-apps.js";
 import { getLogsSchema, getLogs } from "./tools/get-logs.js";
 import { getStatusSchema, getStatus } from "./tools/get-status.js";
 import { listMachinesSchema, listMachines } from "./tools/list-machines.js";
+import { queryDbSchema, queryDb } from "./tools/query-db.js";
 
 function registerTools(server: McpServer) {
   server.tool(
@@ -36,6 +37,13 @@ function registerTools(server: McpServer) {
     "List all machines (VMs) for a Fly.io application with their state, region, and configuration.",
     listMachinesSchema,
     async (params) => listMachines(params),
+  );
+
+  server.tool(
+    "query_db",
+    "Run a read-only SQL query against a Postgres database on a Fly.io machine via SSH.",
+    queryDbSchema,
+    async (params) => queryDb(params),
   );
 }
 
